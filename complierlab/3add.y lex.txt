@@ -1,0 +1,72 @@
+%{
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+int yylex();
+void yyerror(const char *s);
+
+int temp_count = 1;
+%}
+
+%union {
+    int num;
+    char *id;
+}
+
+%token <num> NUM
+%token <id> IDENTIFIER
+%token ADD SUB MUL DIV ASSIGN
+
+%left ADD SUB
+%left MUL DIV
+
+%%
+
+program: stmt_list
+stmt_list:
+    | stmt_list statement '\n' { printf("%s", $2); }
+    ;
+
+statement:
+    | IDENTIFIER ASSIGN expr {
+        printf("%s = %s\n", $1, $3);
+        free($3);
+    }
+    ;
+
+expr:
+    expr ADD term { $$ = generate_code($1, $3, "+"); }
+    | expr SUB term { $$ = generate_code($1, $3, "-"); }
+    | term { $$ = $1; }
+    ;
+
+term:
+    term MUL factor { $$ = generate_code($1, $3, "*"); }
+    | term DIV factor { $$ = generate_code($1, $3, "/"); }
+    | factor { $$ = $1; }
+    ;
+
+factor:
+    NUM { $$ = strdup(yytext); }
+    | IDENTIFIER { $$ = strdup(yytext); }
+    | LPAREN expr RPAREN { $$ = $2; }
+    ;
+
+%%
+
+int main() {
+    yyparse();
+    return 0;
+}
+
+void yyerror(const char *s) {
+    fprintf(stderr, "%s\n", s);
+}
+
+char* generate_code(char* arg1, char* arg2, char* op) {
+    char temp[20];
+    sprintf(temp, "t%d", temp_count++);
+    printf("%s = %s %s %s\n", temp, arg1, op, arg2);
+    return strdup(temp);
+}

@@ -1,0 +1,23 @@
+%{
+#include<stdio.h>
+#include<stdlib.h>
+#include "y.tab.h"
+void yyerror(char *s);
+int yylex();
+%}
+%token Zero One
+%%
+stmt: S;
+S: SA | A;
+A: Zero Zero | One One;
+%%
+int main() {
+    yyparse();
+    printf("Accepted\n");
+    exit(0);
+}
+void yyerror(char *s) {
+    printf("Not Accepted\n");
+    exit(0);
+}
+

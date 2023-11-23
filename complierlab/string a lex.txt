@@ -1,0 +1,11 @@
+%%
+[Aa].*
+    printf("string starts with 'A' or 'a': %s\n", yytext);
+.
+\n
+%%
+
+int main() {
+    yylex();
+    return 0;
+}

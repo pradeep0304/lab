@@ -1,0 +1,36 @@
+#include <stdio.h>
+
+int main() {
+    int n, i, j;
+    char a[50][50];
+
+    printf("Enter the number of intermediate codes: ");
+    scanf("%d", &n);
+
+    for (i = 0; i < n; i++) {
+        printf("Enter the 3 address code %d: ", i + 1);
+        for (j = 0; j < 6; j++) {
+            scanf(" %c", &a[i][j]);
+        }
+    }
+
+    printf("\nThe generated code is:\n");
+
+    for (i = 0; i < n; i++) {
+        printf("Mov %c, R%d\n", a[i][3], i);
+        
+        if (a[i][4] == '-')
+            printf("Sub %c, R%d\n", a[i][5], i);
+        else if (a[i][4] == '+')
+            printf("Add %c, R%d\n", a[i][5], i);
+        else if (a[i][4] == '*')
+            printf("Mul %c, R%d\n", a[i][5], i);
+        else if (a[i][4] == '/')
+            printf("Div %c, R%d\n", a[i][5], i);
+        
+        printf("Mov R%d, %c\n", i, a[i][1]);
+        printf("\n");
+    }
+
+    return 0;
+}
